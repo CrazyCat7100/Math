@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Team Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7ff;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .players-list {
+            width: 40%;
+            background-color: #b3e0ff;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .player-card {
+            background-color: #007acc;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .generator-section {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #007acc;
+            position: absolute;
+            top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 50px;
+        }
+        button:hover {
+            background-color: #005fa3;
+        }
+        .team {
+            margin-top: 20px;
+            font-size: 40px;
+            gap: 20px;
+            color: #007acc;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        .average-score {
+            margin-top: 10px;
+            font-size: 20px;
+            color: #005fa3;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Players List Section (40% width) -->
+        <div class="players-list">
+            <h2>Players</h2>
+            <div id="playersContainer"></div>
+        </div>
+
+        <!-- Generator Section (60% width) -->
+        <div class="generator-section">
+            <h1>Basketball Team Generator</h1>
+            <div class="team" id="teamDisplay"></div>
+            <div class="average-score" id="averageScoreDisplay"></div>
+            <button onclick="generateTeam()">Generate Team</button>
+        </div>
+    </div>
+
+    <script>
+        const players = [
+            { name: "Michael Jordan", percentage: 0.05 },   // 5%
+            { name: "LeBron James", percentage: 0.07 },    // 7%
+            { name: "Stephen Curry", percentage: 0.08 },   // 8%
+            { name: "Kobe Bryant", percentage: 0.10 },     // 10%
+            { name: "Shaquille O’Neal", percentage: 0.12 }, // 12%
+            { name: "Anthony Benney", percentage: 0.15 },  // 15%
+            { name: "Kevin Durant", percentage: 0.12 },    // 12%
+            { name: "Magic Johnson", percentage: 0.13 },   // 13%
+            { name: "Kwame Brown", percentage: 0.18 },     // 18%
+            { name: "Jason Tatum", percentage: 0.14 },     // 14%
+            { name: "Larry Bird", percentage: 0.11 },      // 11%
+            { name: "Bronny James", percentage: 0.15 }     // 15%
+        ];
+
+        function generateTeam() {
+            const team = [];
+            const availablePlayers = [...players];
+            let totalScore = 0;
+
+            for (let i = 0; i < 3; i++) {
+                let random = Math.random();
+                let cumulativePercentage = 0;
+                let playerSelected = false;
+
+                for (let j = 0; j < availablePlayers.length; j++) {
+                    cumulativePercentage += availablePlayers[j].percentage;
+                    if (random < cumulativePercentage) {
+                        team.push(availablePlayers[j]);
+                        totalScore += availablePlayers[j].percentage;
+                        availablePlayers.splice(j, 1); // Remove selected player
+                        playerSelected = true;
+                        break;
+                    }
+                }
+
+                // If no player is selected based on the probabilities, select randomly from the remaining players
+                if (!playerSelected && availablePlayers.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * availablePlayers.length);
+                    team.push(availablePlayers[randomIndex]);
+                    totalScore += availablePlayers[randomIndex].percentage;
+                    availablePlayers.splice(randomIndex, 1); // Remove selected player
+                }
+            }
+
+            // Display the selected team vertically
+            const teamNames = team.map(player => `<div>${player.name}</div>`).join('');
+            document.getElementById("teamDisplay").innerHTML = teamNames;
+
+            // Calculate and display the average score (percentage)
+            const averageScore = (totalScore / 3).toFixed(2).slice(2, 4);
+            document.getElementById("averageScoreDisplay").innerHTML = `Team Overall: ${averageScore}%`;
+        }
+
+        function loadPlayers() {
+            const playersContainer = document.getElementById("playersContainer");
+            playersContainer.innerHTML = '';
+
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.innerHTML = `<strong>${player.name}</strong><br>Pick Percentage: ${(player.percentage * 100).toFixed(2)}%`;
+                playersContainer.appendChild(playerCard);
+            });
+        }
+
+        loadPlayers();
+    </script>
+</body>
+</html>
